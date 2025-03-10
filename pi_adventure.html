@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>π的神奇世界 - 小朋友的互动乐园</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .pi-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        
+        .circle-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 30px 0;
+        }
+        
+        .circle {
+            width: 200px;
+            height: 200px;
+            background-color: #ff9999;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            transition: all 0.5s ease;
+        }
+        
+        .circle::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 1px;
+            height: 100%;
+            background-color: rgba(255,255,255,0.7);
+        }
+        
+        .circle::after {
+            content: "";
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background-color: rgba(255,255,255,0.7);
+        }
+        
+        .radius-line {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 50%;
+            height: 2px;
+            background-color: #e74c3c;
+            transform-origin: left center;
+            z-index: 2;
+        }
+        
+        .circumference {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px dashed #3498db;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        
+        .slider-container {
+            width: 80%;
+            max-width: 400px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .slider {
+            flex-grow: 1;
+        }
+        
+        .value-display {
+            font-weight: bold;
+            color: #e74c3c;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .formula {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+        
+        .highlight {
+            background-color: #FFEB3B;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+        
+        .fun-fact {
+            background-color: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+        
+        .back-button {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: #2980b9;
+        }
+        
+        .tab-container {
+            margin: 30px 0;
+        }
+        
+        .tab-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .tab-button.active {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>π的神奇世界</h1>
+            <p>探索圆周率π的奥秘，了解这个神奇的数字如何影响我们的世界</p>
+        </header>
+        
+        <main>
+            <a href="index.html" class="back-button">← 返回主页</a>
+            
+            <div class="pi-container">
+                <h2>什么是圆周率π？</h2>
+                <p>圆周率π是一个神奇的数字，它表示圆的周长与直径的比值。无论圆的大小如何，这个比值始终是相同的！</p>
+                <p>π的值约为3.14159265359...，它是一个无限不循环小数，这意味着它的小数部分永远不会结束，也不会出现重复的模式。</p>
+                
+                <div class="circle-container">
+                    <div class="circle" id="demo-circle">
+                        <div class="circumference"></div>
+                        <div class="radius-line"></div>
+                    </div>
+                    
+                    <div class="controls">
+                        <div class="slider-container">
+                            <label for="radius-slider">圆的半径：</label>
+                            <input type="range" id="radius-slider" class="slider" min="50" max="150" value="100">
+                            <span class="value-display" id="radius-value">100</span>
+                        </div>
+                        
+                        <div class="formula">
+                            圆的周长 = 2 × π × 半径 = <span class="highlight" id="circumference-value">628.32</span>
+                        </div>
+                        
+                        <div class="formula">
+                            圆的面积 = π × 半径<sup>2</sup> = <span class="highlight" id="area-value">31415.93</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fun-fact">
+                    <p>有趣的事实：π日是每年的3月14日，因为3.14是π的近似值。在这一天，世界各地的数学爱好者会举办各种活动来庆祝这个特殊的数字！</p>
+                </div>
+            </div>
+            
+            <div class="tab-container">
+                <div class="tab-buttons">
+                    <button class="tab-button active" data-tab="history">π的历史</button>
+                    <button class="tab-button" data-tab="applications">π的应用</button>
+                    <button class="tab-button" data-tab="fun">有趣的π</button>
+                </div>
+                
+                <div class="tab-content active" id="history">
+                    <h3>π的历史</h3>
+                    <p>人类对π的探索可以追溯到古代文明。古埃及人和巴比伦人已经知道圆周率的概念，并使用了近似值。</p>
+                    <p>古希腊数学家阿基米德（公元前287-212年）使用了一种巧妙的方法来计算π的值，他通过计算正多边形的周长来逼近圆的周长。</p>
+                    <p>中国古代数学家祖冲之（429-500年）计算出π的值在3.1415926和3.1415927之间，这个精度在当时是世界领先的。</p>
+                </div>
+                
+                <div class="tab-content" id="applications">
+                    <h3>π的应用</h3>
+                    <p>π在我们的日常生活和科学研究中有着广泛的应用：</p>
+                    <ul>
+                        <li>建筑和工程：设计圆形建筑、轮子和其他圆形物体</li>
+                        <li>物理学：描述波动、振动和周期运动</li>
+                        <li>电子学：计算电路中的电容和电感</li>
+                        <li>统计学：正态分布（钟形曲线）的公式中包含π</li>
+                        <li>GPS导航：计算地球上两点之间的距离</li>
+                    </ul>
+                </div>
+                
+                <div class="tab-content" id="fun">
+                    <h3>有趣的π</h3>
+                    <p>π是一个充满魅力的数字，有许多有趣的事实：</p>
+                    <ul>
+                        <li>有人创作了"π诗"，其中每个单词的字母数对应π的小数位数字</li>
+                        <li>目前计算出的π的小数位数已超过100万亿位</li>
+                        <li>有些人能够记忆π的数千位小数，世界纪录保持者能记忆超过70,000位</li>
+                        <li>在π的小数位中，可以找到任何有限的数字序列，包括你的生日！</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>© 2024 小朋友的互动乐园 | 由大模型生成</p>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取元素
+            const radiusSlider = document.getElementById('radius-slider');
+            const radiusValue = document.getElementById('radius-value');
+            const circumferenceValue = document.getElementById('circumference-value');
+            const areaValue = document.getElementById('area-value');
+            const circle = document.getElementById('demo-circle');
+            
+            // 更新圆的大小和计算值
+            function updateCircle() {
+                const radius = parseInt(radiusSlider.value);
+                const circumference = 2 * Math.PI * radius;
+                const area = Math.PI * radius * radius;
+                
+                // 更新显示值
+                radiusValue.textContent = radius;
+                circumferenceValue.textContent = circumference.toFixed(2);
+                areaValue.textContent = area.toFixed(2);
+                
+                // 更新圆的大小
+                circle.style.width = (radius * 2) + 'px';
+                circle.style.height = (radius * 2) + 'px';
+            }
+            
+            // 监听滑块变化
+            radiusSlider.addEventListener('input', updateCircle);
+            
+            // 初始化
+            updateCircle();
+            
+            // 标签切换功能
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // 移除所有活动状态
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加当前活动状态
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html> 
